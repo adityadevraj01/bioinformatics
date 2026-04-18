@@ -1,0 +1,2056 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bioinformatics Quiz</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 16px;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            padding: 20px;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #6c757d;
+            text-transform: uppercase;
+            margin-top: 5px;
+        }
+
+        .quiz-content {
+            padding: 30px;
+        }
+
+        .question-card {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .question-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .question-card.correct {
+            border-color: #28a745;
+            background: #f8fff9;
+        }
+
+        .question-card.incorrect {
+            border-color: #dc3545;
+            background: #fff8f8;
+        }
+
+        .question-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .question-number {
+            background: #667eea;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+
+        .question-text {
+            font-size: 16px;
+            font-weight: 500;
+            color: #2d3748;
+            flex: 1;
+        }
+
+        .options {
+            margin-top: 15px;
+        }
+
+        .option {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            margin: 8px 0;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: white;
+        }
+
+        .option:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .option input[type="radio"] {
+            margin-right: 12px;
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+        }
+
+        .option label {
+            cursor: pointer;
+            flex: 1;
+            user-select: none;
+        }
+
+        .option.selected {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .option.correct-answer {
+            border-color: #28a745;
+            background: #f8fff9;
+        }
+
+        .option.wrong-answer {
+            border-color: #dc3545;
+            background: #fff8f8;
+        }
+
+        .feedback {
+            margin-top: 15px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .feedback.show {
+            display: block;
+        }
+
+        .feedback.correct {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .feedback.incorrect {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .submit-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 16px 40px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+            transition: transform 0.2s ease;
+        }
+
+        .submit-button:hover {
+            transform: translateY(-2px);
+        }
+
+        .submit-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .results {
+            text-align: center;
+            padding: 40px;
+            display: none;
+        }
+
+        .results.show {
+            display: block;
+        }
+
+        .results h2 {
+            font-size: 32px;
+            color: #2d3748;
+            margin-bottom: 20px;
+        }
+
+        .score-circle {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            font-weight: bold;
+            margin: 30px auto;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .retry-button {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+            padding: 12px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.2s ease;
+        }
+
+        .retry-button:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: #e9ecef;
+            margin-bottom: 20px;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s ease;
+        }
+
+        .mode-selector {
+            background: white;
+            padding: 25px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .mode-selector h3 {
+            font-size: 18px;
+            color: #2d3748;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .mode-buttons {
+            display: flex;
+            gap: 15px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .mode-button {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .mode-button:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .mode-button.active {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .mode-button .mode-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .mode-button .mode-desc {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .mode-indicator {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .mode-indicator.study {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .mode-indicator.exam {
+            background: #fff3cd;
+            color: #856404;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧬 Bioinformatics Quiz</h1>
+            <p>Test your knowledge of bioinformatics, sequence alignment, and molecular biology</p>
+        </div>
+
+        <div class="mode-selector">
+            <h3>Select Quiz Mode</h3>
+            <div class="mode-buttons">
+                <div class="mode-button active" onclick="setMode('study')" id="studyModeBtn">
+                    <div class="mode-title">📚 Study Mode</div>
+                    <div class="mode-desc">Get instant feedback after each answer</div>
+                </div>
+                <div class="mode-button" onclick="setMode('exam')" id="examModeBtn">
+                    <div class="mode-title">📝 Exam Mode</div>
+                    <div class="mode-desc">View results after submitting all answers</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-value" id="totalQuestions">40</div>
+                <div class="stat-label">Total Questions</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="answered">0</div>
+                <div class="stat-label">Answered</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="currentScore">0</div>
+                <div class="stat-label">Current Score</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">
+                    <span class="mode-indicator study" id="modeIndicator">Study</span>
+                </div>
+                <div class="stat-label">Current Mode</div>
+            </div>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+        </div>
+
+        <div class="quiz-content" id="quizContent">
+            <!-- Questions will be inserted here -->
+        </div>
+
+        <div class="results" id="results">
+            <h2>Quiz Complete! 🎉</h2>
+            <div class="score-circle" id="finalScore">0/40</div>
+            <p style="font-size: 18px; color: #6c757d; margin-bottom: 20px;">
+                <span id="percentage">0</span>% Correct
+            </p>
+            <button class="retry-button" onclick="location.reload()">Retry Quiz</button>
+            <button class="retry-button" id="shuffleRetryBtn" style="display:none; margin-left:10px; background:#667eea; color:white; border-color:#667eea;" onclick="shuffleAndRetry()">🔀 Try Again (Shuffled)</button>
+        </div>
+    </div>
+
+    <script>
+        const quizData = [
+            // === SET 1: Bioinformatics Basics ===
+            {
+                question: "Bioinformatics is about ________",
+                options: [
+                    "Determining 3D structures",
+                    "Next Generation Sequencing",
+                    "Managing, analyzing, and understanding biological data",
+                    "Obtaining gene expression profiles"
+                ],
+                correct: 2
+            },
+            {
+                question: "In drug design, role of Bioinformatics is to ______",
+                options: [
+                    "Identify drugs",
+                    "Identify potential lead molecules",
+                    "Measure IC50 values",
+                    "Estimate toxicity"
+                ],
+                correct: 1
+            },
+            {
+                question: "What is the composition of proline in a protein sequence if the occurrence of each amino acid is the same?",
+                options: [
+                    "0.05",
+                    "0.02",
+                    "0.10",
+                    "1.0"
+                ],
+                correct: 0
+            },
+            {
+                question: "Pyrimidine has a hexagon shape with ________",
+                options: [
+                    "2 carbon 4 nitrogen",
+                    "4 carbon 2 nitrogen",
+                    "3 carbon 3 nitrogen",
+                    "4 carbon 1 nitrogen and 1 oxygen"
+                ],
+                correct: 1
+            },
+            {
+                question: "Total number of reverse reading frames for a given DNA sequence is ________",
+                options: [
+                    "6",
+                    "3",
+                    "1",
+                    "4"
+                ],
+                correct: 1
+            },
+            {
+                question: "Given the hydrogen bond energy of dinucleotides AC = -9.64; CT: -8.78; TG: -9.34; GC: -12.03, the average hydrogen bond energy of the sequence ACTGCAGT is ________",
+                options: [
+                    "-8.44",
+                    "-9.65",
+                    "-67.55",
+                    "-9.94"
+                ],
+                correct: 1
+            },
+            {
+                question: "Flexibility or rigidity of a DNA sequence is related with ________",
+                options: [
+                    "Length of the DNA",
+                    "Base stacking",
+                    "Young's modulus",
+                    "Hydrophobicity of DNA"
+                ],
+                correct: 2
+            },
+            {
+                question: "PIR stands for ________",
+                options: [
+                    "Protein Informatics Research",
+                    "Protein Internal Repeats",
+                    "Protein Information Resource",
+                    "Protein Internal Repeats"
+                ],
+                correct: 2
+            },
+            {
+                question: "Logical structure of a database is called ________",
+                options: [
+                    "Ontology",
+                    "Schema",
+                    "Format",
+                    "Tables"
+                ],
+                correct: 1
+            },
+            {
+                question: "Commonly used literature database for biologists is ________",
+                options: [
+                    "Science citation index",
+                    "PUBMED",
+                    "Biological abstract",
+                    "SCOPUS"
+                ],
+                correct: 1
+            },
+
+            // === SET 2: Amino Acids & Mutations ===
+            {
+                question: "Which of the following is a transition?",
+                options: [
+                    "A to T",
+                    "A to C",
+                    "C to T",
+                    "G to C"
+                ],
+                correct: 2
+            },
+            {
+                question: "Rank the group of amino acids A, V, L, R, S with increasing non-polarity.",
+                options: [
+                    "L, V, A, S, R",
+                    "S, A, V, L, R",
+                    "R, S, A, V, L",
+                    "R, A, L, V, S"
+                ],
+                correct: 2
+            },
+            {
+                question: "Select the set of charged amino acids from the following combinations",
+                options: [
+                    "Glutamate and Arginine",
+                    "Asparagine and Glutamate",
+                    "Glutamine and Arginine",
+                    "Asparagine and Glutamine"
+                ],
+                correct: 0
+            },
+            {
+                question: "________ interaction is defined as the tendency of amino acids to come close to each other in aqueous environment.",
+                options: [
+                    "Ionic",
+                    "Hydrogen bond",
+                    "Polar",
+                    "Hydrophobic"
+                ],
+                correct: 3
+            },
+            {
+                question: "Which of the following groups of amino acids have similar composition in protein sequences?",
+                options: [
+                    "Trp and Val",
+                    "Cys and Trp",
+                    "Cys and Ala",
+                    "Gly and Trp"
+                ],
+                correct: 1
+            },
+            {
+                question: "In Dot plot, a break in the main diagonal, along with a shift, indicates ______",
+                options: [
+                    "Palindromes",
+                    "Matches",
+                    "Indels",
+                    "Mismatches"
+                ],
+                correct: 2
+            },
+
+            // === SET 3: Protein Structure ===
+            {
+                question: "The transmembrane regions of inner and outer membrane proteins have secondary structures ______ and ______ respectively",
+                options: [
+                    "alpha helical and beta barrel",
+                    "alpha helical and coil",
+                    "beta barrel and alpha helical",
+                    "coil and alpha helical"
+                ],
+                correct: 0
+            },
+            {
+                question: "The major functional role of enzymes is ________",
+                options: [
+                    "Catalytic activity",
+                    "Transporter",
+                    "Sugar metabolism",
+                    "All of these"
+                ],
+                correct: 0
+            },
+            {
+                question: "What is the database for enzymes?",
+                options: [
+                    "ExPASy",
+                    "BRENDA",
+                    "CSA",
+                    "UniProtKB"
+                ],
+                correct: 1
+            },
+            {
+                question: "The top level of EC number classification is based on ______",
+                options: [
+                    "Molecular weight",
+                    "Type of reactions",
+                    "Sequence",
+                    "Cellular location"
+                ],
+                correct: 1
+            },
+
+            // === SET 4: Sequence Alignment ===
+            {
+                question: "For construction of PAM1 matrix, sequences with ______ identity are considered.",
+                options: [
+                    "99%",
+                    "90%",
+                    "1%",
+                    "10%"
+                ],
+                correct: 0
+            },
+            {
+                question: "PAM matrix is also called ________",
+                options: [
+                    "Log even matrix",
+                    "Log odds matrix",
+                    "Antilog matrix",
+                    "Orthogonal matrix"
+                ],
+                correct: 1
+            },
+            {
+                question: "______ and ________ algorithms are used for global and local sequence alignments, respectively.",
+                options: [
+                    "Needleman-Wunsch and Smith-Waterman",
+                    "Blast and Needleman-Wunsch",
+                    "Smith-Waterman and Needleman-Wunsch",
+                    "Smith-Needleman and Wunsch-Waterman"
+                ],
+                correct: 0
+            },
+            {
+                question: "In global alignment, the value for each element in the matrix is assigned using the best score for ________",
+                options: [
+                    "Match/mismatch, insertion and deletion",
+                    "Insertion, deletion and zero",
+                    "Deletion, match/mismatch and zero",
+                    "Match/mismatch, insertion, deletion and zero"
+                ],
+                correct: 0
+            },
+            {
+                question: "Which of the following substitutions is accepted in PAM250?",
+                options: [
+                    "Ser to Phe",
+                    "Glu to Lys",
+                    "Leu to Ile",
+                    "Trp to Asp"
+                ],
+                correct: 2
+            },
+            {
+                question: "Why a penalty is assigned to gaps in sequence alignment algorithms?",
+                options: [
+                    "Opening a gap is biologically more likely",
+                    "Nature prefers indels over substitutions",
+                    "Easier to implement in software",
+                    "Opening a gap is biologically not preferred"
+                ],
+                correct: 3
+            },
+            {
+                question: "In the given Needleman-Wunsch alignment matrix, the value of X is ______. Match: 3; Gap: -2; Mismatch: -1. (Sequences: AGA vs ATC, position row A col G, value 3; X is next cell row A col A)",
+                options: [
+                    "0",
+                    "1",
+                    "2",
+                    "-1"
+                ],
+                correct: 1
+            },
+            {
+                question: "An E-Value of 1e-50 in BLAST alignment indicates ________",
+                options: [
+                    "Highly significant alignment",
+                    "Less significant alignment",
+                    "Not significant alignment",
+                    "An error in the alignment"
+                ],
+                correct: 0
+            },
+            {
+                question: "Which of the following is not a multiple sequence alignment tool?",
+                options: [
+                    "ClustalW",
+                    "MUSCLE",
+                    "MAFFT",
+                    "PyMOL"
+                ],
+                correct: 3
+            },
+            {
+                question: "What could be the best motif obtained by the alignment of the sequences ATTTACCGGA and TTAATCCGGT?",
+                options: [
+                    "TAAT",
+                    "CCGG",
+                    "TTAA",
+                    "TACC"
+                ],
+                correct: 1
+            },
+
+            // === SET 5: Phylogenetics & Conservation ===
+            {
+                question: "Using AL2CO, the unweighted entropy-based conservation scores at positions 3 and 6 are 0 and -0.698, respectively. Which of the following statements is correct?",
+                options: [
+                    "Position 6 is more conserved than 3",
+                    "Position 3 is less conserved than 6",
+                    "Position 6 is less conserved than 3",
+                    "None of these"
+                ],
+                correct: 2
+            },
+            {
+                question: "Phylogenetic analysis of protein sequences deals with ________",
+                options: [
+                    "Similarity",
+                    "Evolutionary relationship",
+                    "Physicochemical properties",
+                    "All of these"
+                ],
+                correct: 1
+            },
+            {
+                question: "The evolutionary relationship in phylogenetic tree is represented by ________",
+                options: [
+                    "Fruits",
+                    "Roots",
+                    "Branches",
+                    "Leaves"
+                ],
+                correct: 2
+            },
+            {
+                question: "Choose the formula for calculating the number of rooted trees for n species.",
+                options: [
+                    "(2n − 3)!/2^(n−2)(n − 2)!",
+                    "(2n − 5)!/2^(n−3)(n − 3)!",
+                    "(n − 1)!",
+                    "(2n − 1)*n!"
+                ],
+                correct: 0
+            },
+            {
+                question: "Amino acid composition analysis will not provide the information on ________",
+                options: [
+                    "Hydrophobicity",
+                    "Charge",
+                    "3D structure",
+                    "Average molecular weight"
+                ],
+                correct: 2
+            },
+            {
+                question: "What is the residue pair preference (%) of PE in the given sequence: EIITPEEPEPTY?",
+                options: [
+                    "28.57",
+                    "16.66",
+                    "0.02",
+                    "2"
+                ],
+                correct: 0
+            },
+            {
+                question: "Amphipathic character of amino acid residues in a protein sequence is based on ________",
+                options: [
+                    "Periodicity of polar and nonpolar character of residues",
+                    "Hydrophobicity of amino acid residues",
+                    "Occurrence of polar residues",
+                    "Occurrence of nonpolar residues"
+                ],
+                correct: 0
+            },
+            {
+                question: "The hydrophobicity profile with alternating peaks above and below average is a pattern for ________",
+                options: [
+                    "Alpha helices",
+                    "Beta strands",
+                    "Turns",
+                    "Loops"
+                ],
+                correct: 1
+            },
+
+            // === SET 6: Redundancy & Protein Datasets ===
+            {
+                question: "Which of the following software is used to remove redundancy in protein sequences?",
+                options: [
+                    "CD-HIT",
+                    "BLAST",
+                    "ClustalW",
+                    "All of these"
+                ],
+                correct: 0
+            },
+            {
+                question: "The composition of amino acid L in redundant and non-redundant sets of amino acid sequences are 0.8 and 0.5 respectively. Choose the correct statement",
+                options: [
+                    "L is over-represented in redundant set",
+                    "L is under-represented in redundant set",
+                    "L is sparsely distributed in redundant set",
+                    "L is over-represented in non-redundant set"
+                ],
+                correct: 0
+            },
+            {
+                question: "Calculate the Hamming distance between the sequences, NEWDELHI and NPTELIITM using amino acid composition",
+                options: [
+                    "1.08",
+                    "0.51",
+                    "1.89",
+                    "0.27"
+                ],
+                correct: 0
+            },
+            {
+                question: "Two proteins with sequence lengths 100 (query) and 200 (target) showed an alignment for the first 20 residues. What is the query coverage?",
+                options: [
+                    "10%",
+                    "20%",
+                    "50%",
+                    "100%"
+                ],
+                correct: 1
+            },
+            {
+                question: "Which of the following conditions define an amphipathic alpha helix?",
+                options: [
+                    "Four edges in which 1 & 2 have low and 3 & 4 have high hydrophobicity",
+                    "Four edges in which 1 & 3 have high and 2 & 4 have low hydrophobicity",
+                    "Four edges in which 1 & 3 have low and 2 & 4 have high hydrophobicity",
+                    "Two edges in which 1 has high and 2 has low hydrophobicity"
+                ],
+                correct: 0
+            },
+            {
+                question: "Identify the sequence, which follows the pattern [NEW]-x-H-{GLMP}(3)?",
+                options: [
+                    "ETHGLM",
+                    "NEHRQW",
+                    "PAHKQA",
+                    "NPARQW"
+                ],
+                correct: 1
+            },
+
+            // === SET 7: Secondary Structure Prediction ===
+            {
+                question: "In alpha helices, the hydrogen bond is observed between ______ and ______ residues",
+                options: [
+                    "i, i+4",
+                    "i, i+5",
+                    "i, i+3",
+                    "i+1, i+4"
+                ],
+                correct: 0
+            },
+            {
+                question: "The rotation along N and Cα atoms in a peptide backbone is denoted by ______",
+                options: [
+                    "Φ angle",
+                    "Ψ angle",
+                    "X angle",
+                    "Ω angle"
+                ],
+                correct: 0
+            },
+            {
+                question: "Secondary structure prediction based on amino acid propensity is proposed by ________",
+                options: [
+                    "GOR",
+                    "Rost and Sandor",
+                    "Barton",
+                    "Chou-Fasman"
+                ],
+                correct: 3
+            },
+            {
+                question: "GOR method uses the information on ________",
+                options: [
+                    "8 residues on both sides of the central residue only",
+                    "4 states of secondary structures only",
+                    "Window length of 17 residues and 4 states of secondary structures",
+                    "Window length of 17 residues and 3 states of secondary structures"
+                ],
+                correct: 2
+            },
+            {
+                question: "What is the propensity of Glutamine to be in helix (H) for the following assignment? QERQQGLAGQ / BBHHHHEBBH",
+                options: [
+                    "1.5",
+                    "1.0",
+                    "2.0",
+                    "0.0"
+                ],
+                correct: 0
+            },
+            {
+                question: "If a protein contains a total of 1700 residues and 600 of them are in helix. Considering the residue Ala, among 300 residues 195 are in helix. What is the information content of Ala in helix?",
+                options: [
+                    "1.85",
+                    "0.5",
+                    "0.11",
+                    "1.22"
+                ],
+                correct: 3
+            },
+
+            // === SET 8: 3D Structure & PyMOL ===
+            {
+                question: "X-ray crystallography directly provides the information on ________",
+                options: [
+                    "Electron density maps",
+                    "Three-dimensional structures",
+                    "Alpha helical and beta strand regions",
+                    "All of these"
+                ],
+                correct: 0
+            },
+            {
+                question: "If the structure of a protein is determined at resolutions 1.0 Å (A) and 3.0 Å (B), which of the following statements is correct?",
+                options: [
+                    "B has better resolution than A",
+                    "Structure quality does not depend on resolution",
+                    "A has better resolution than B",
+                    "Resolution is the same for both A and B"
+                ],
+                correct: 2
+            },
+            {
+                question: "Select the amino acid residue, which is a strong helix breaker:",
+                options: [
+                    "Asn",
+                    "Trp",
+                    "Pro",
+                    "Gln"
+                ],
+                correct: 2
+            },
+            {
+                question: "In PyMol, the buttons A, S, and C indicate ________",
+                options: [
+                    "Action, Show and Color",
+                    "Actions, Select and Control",
+                    "Align, Slide and Control",
+                    "Add, Select and Color"
+                ],
+                correct: 0
+            },
+            {
+                question: "Buriedness provides the information on the preference of residues in the ______",
+                options: [
+                    "Surface of the protein",
+                    "Interior of the protein",
+                    "Center of mass of a protein",
+                    "All of these"
+                ],
+                correct: 1
+            },
+            {
+                question: "What is the probe radius generally used for a solvent molecule, water for calculating accessible surface area of a protein?",
+                options: [
+                    "1.2 Å",
+                    "1.4 Å",
+                    "1 Å",
+                    "2.8 Å"
+                ],
+                correct: 1
+            },
+            {
+                question: "Which of the following represents the 3D structure information in 2D form?",
+                options: [
+                    "Contact order",
+                    "Contact map",
+                    "Long range order",
+                    "Hydrophobicity"
+                ],
+                correct: 1
+            },
+            {
+                question: "Long-range order is directly proportional to ________",
+                options: [
+                    "Contact order",
+                    "All contacts",
+                    "Length of the protein",
+                    "Protein folding rate"
+                ],
+                correct: 0
+            },
+            {
+                question: "A protein has 50 residues and 250 contacts. Residue Thr33 has contacts with Asp31, Leu32, Glu34, Ser35, Leu36, His46, and Pro48. What is the long-range order for the residue Thr33?",
+                options: [
+                    "0.05",
+                    "0.07",
+                    "0.04",
+                    "0.03"
+                ],
+                correct: 2
+            },
+            {
+                question: "What is the surrounding hydrophobicity of Pro8, if it is surrounded by 1 Ala, 1 Val, 2 Thr, 2 His, and 2 Tyr? (The hydrophobicity values are A,C,G,M,Y: 1; F,I,L,V,W: 2; D,E,K,H,R: -2 and N,P,Q,S,T: -1)",
+                options: [
+                    "-1",
+                    "0",
+                    "1",
+                    "2"
+                ],
+                correct: 0
+            },
+
+            // === SET 9: Protein Interactions & Homology Modeling ===
+            {
+                question: "Distance between two cysteines, which likely to form a disulfide bond is ______ Å",
+                options: [
+                    "3.0-3.2",
+                    "4.0-1.2",
+                    "1.0-1.2",
+                    "2.0-2.2"
+                ],
+                correct: 3
+            },
+            {
+                question: "Which of the following residues can form hydrogen bonds with side chain atoms?",
+                options: [
+                    "Val",
+                    "Phe",
+                    "Ser",
+                    "Ala"
+                ],
+                correct: 2
+            },
+            {
+                question: "If N-H...O forms hydrogen bond, identify the hydrogen bond donor atom",
+                options: [
+                    "N",
+                    "H",
+                    "O",
+                    "N-H"
+                ],
+                correct: 0
+            },
+            {
+                question: "In homology modeling, SCR stands for ______",
+                options: [
+                    "Structurally conserved region",
+                    "Structural catalytic region",
+                    "Sequence conserved region",
+                    "Semi conserved region"
+                ],
+                correct: 0
+            },
+
+            // === SET 10: Biology & Math Basics ===
+            {
+                question: "Protein is:",
+                options: [
+                    "Food",
+                    "A small molecule",
+                    "A biological macromolecule",
+                    "A molecule to transfer information from parent to child"
+                ],
+                correct: 2
+            },
+            {
+                question: "What is transcription?",
+                options: [
+                    "Make a copy of DNA",
+                    "Complementary strand",
+                    "Conversion of DNA to RNA",
+                    "Conversion of RNA to protein"
+                ],
+                correct: 2
+            },
+            {
+                question: "How many naturally occurring amino acids?",
+                options: [
+                    "20",
+                    "5",
+                    "18",
+                    "26"
+                ],
+                correct: 0
+            },
+            {
+                question: "Cellulose is a:",
+                options: [
+                    "Carbohydrate",
+                    "Protein",
+                    "DNA",
+                    "RNA"
+                ],
+                correct: 0
+            },
+            {
+                question: "The two strands of a double-helix model of DNA are held together by hydrogen bonds between:",
+                options: [
+                    "Sugar and phosphate groups",
+                    "Sugar and nitrogenous bases",
+                    "Nitrogenous bases",
+                    "Phosphate groups and nitrogenous bases"
+                ],
+                correct: 2
+            },
+            {
+                question: "Distance between the points (1,2,3) and (1,3,6) is:",
+                options: [
+                    "3.72",
+                    "3",
+                    "4",
+                    "3.16"
+                ],
+                correct: 3
+            },
+            {
+                question: "What is the slope of the straight line, 2y = -4x + 7?",
+                options: [
+                    "-4",
+                    "-2",
+                    "7",
+                    "3.5"
+                ],
+                correct: 1
+            },
+            {
+                question: "If the dimension of matrix A is 2 x 3 and B is 4 x 5, what is the dimension of the matrix AB?",
+                options: [
+                    "2 x 5",
+                    "3 x 4",
+                    "6 x 20",
+                    "Cannot multiply"
+                ],
+                correct: 3
+            },
+            {
+                question: "If we toss two coins, what is the probability of getting both heads or both tails?",
+                options: [
+                    "1",
+                    "0.75",
+                    "0.50",
+                    "0.25"
+                ],
+                correct: 2
+            },
+            {
+                question: "The energy of charge-charge interactions is proportional to:",
+                options: [
+                    "1/r",
+                    "1/r²",
+                    "1/r³",
+                    "r"
+                ],
+                correct: 0
+            },
+
+            // === SET 11: Homology Modelling & Protein Stability ===
+            {
+                question: "In homology modelling, if sequences of 100 residues are aligned with 60% sequence identity, the alignment is considered to be in ________ zone.",
+                options: [
+                    "Safe",
+                    "Twilight",
+                    "Not good for homology modelling",
+                    "Dangerous"
+                ],
+                correct: 0
+            },
+            {
+                question: "Disallowed regions in Ramachandran plot indicate ________",
+                options: [
+                    "Electrostatic interaction",
+                    "Disulphide bridge",
+                    "Steric hindrance",
+                    "Tertiary structure"
+                ],
+                correct: 2
+            },
+            {
+                question: "Which of the following databases give numerical values of different parameters from 3D structures of the protein?",
+                options: [
+                    "PDB",
+                    "PUBMED",
+                    "PDBParam",
+                    "SWISSPROT"
+                ],
+                correct: 2
+            },
+            {
+                question: "CASP stands for ________",
+                options: [
+                    "Critical Assessment of Protein Structure Prediction",
+                    "Crucial Assessment of Protein Structure Prediction",
+                    "Critical Assessment of Protein Sequence",
+                    "Clustered Assessment of Protein Structure Prediction"
+                ],
+                correct: 0
+            },
+            {
+                question: "Name the web server for identifying the stabilizing residues in protein structures",
+                options: [
+                    "ROBETTA",
+                    "FOLD-X",
+                    "CUPSAT",
+                    "SRide"
+                ],
+                correct: 3
+            },
+            {
+                question: "In a protein, if the hydrophobic residues are loosely packed and Ala is mutated to Val, what will happen to the structure?",
+                options: [
+                    "Enhance hydrophobic packing",
+                    "Introduce steric interactions",
+                    "No change in the structure",
+                    "Form extra hydrogen bonds"
+                ],
+                correct: 0
+            },
+            {
+                question: "The mutant K91R denotes ________",
+                options: [
+                    "Arginine is replaced by lysine at position 91",
+                    "Lysine is replaced by arginine at position 91",
+                    "Lysine is inserted before arginine at position 91",
+                    "Arginine is inserted before lysine at position 91"
+                ],
+                correct: 1
+            },
+            {
+                question: "How many unique amino acid substitutions are possible for understanding stability change upon mutations?",
+                options: [
+                    "400",
+                    "20",
+                    "380",
+                    "10"
+                ],
+                correct: 2
+            },
+            {
+                question: "In Gibb's equation ΔG = ΔH-TΔS, a negative ΔG implies ______",
+                options: [
+                    "Process is non-spontaneous",
+                    "Process is spontaneous",
+                    "ΔH and T are equal",
+                    "ΔH must be positive and ΔS should be negative"
+                ],
+                correct: 1
+            },
+            {
+                question: "Which of the following is dominant in the unfolded state of a protein?",
+                options: [
+                    "Hydrophobic",
+                    "van der Waals",
+                    "Electrostatic",
+                    "Entropy"
+                ],
+                correct: 3
+            },
+            {
+                question: "Which type of mutation is widely used to study the effect of side chains on protein stability (X: any amino acid)?",
+                options: [
+                    "X to charged residues",
+                    "X to serine",
+                    "X to alanine",
+                    "X to hydrophobic residues"
+                ],
+                correct: 2
+            },
+            {
+                question: "In buried mutations, which property is highly correlated with stability?",
+                options: [
+                    "Charge",
+                    "Hydrophobicity",
+                    "Polarity",
+                    "Flexibility"
+                ],
+                correct: 1
+            },
+            {
+                question: "In which method the mutants were divided into 380 potential substitutions and the stability of each mutant was assigned using data from similar types of mutations?",
+                options: [
+                    "Average assignment",
+                    "Energetic approach",
+                    "Distance potential",
+                    "CUPSAT"
+                ],
+                correct: 0
+            },
+            {
+                question: "If the free energies of a wild-type protein and its mutant are -12.7 kcal/mol and -14.5 kcal/mol, respectively, what is the change in free energy upon mutation?",
+                options: [
+                    "1.8 kcal/mol",
+                    "-1.8 kcal/mol",
+                    "-27.2 kcal/mol",
+                    "2.1 kcal/mol"
+                ],
+                correct: 1
+            },
+
+            // === SET 12: Protein-Ligand Interactions & Drug Design ===
+            {
+                question: "If the solvent accessibility of Lys128 in ligand-bound and ligand-free structures are 44.4 Å² and 92.3 Å², respectively. Comment on location of Lys128.",
+                options: [
+                    "It is at the interface",
+                    "It is not at the interface",
+                    "Information is not sufficient",
+                    "Neighboring residue information is necessary to define the interface"
+                ],
+                correct: 0
+            },
+            {
+                question: "Residues Ser102, Thr116, Trp233, Ile245, and His310 in a globular protein have ASA values 112, 84, 5, 2, and 90 Å², respectively. Which of the following is correct?",
+                options: [
+                    "Buried: Ser102, Ile245, Trp233; Exposed: Thr116, His310",
+                    "Buried: Ser102, Thr116, Trp233; Exposed: Ile245, His310",
+                    "Buried: Trp233, His310; Exposed: Ser102, Thr116, Ile245",
+                    "Buried: Ile245, Trp233; Exposed: Ser102, Thr116, His310"
+                ],
+                correct: 3
+            },
+            {
+                question: "Levinthal's paradox is related to ________",
+                options: [
+                    "Protein-protein interaction",
+                    "Protein folding",
+                    "Protein networks",
+                    "Gene regulatory networks"
+                ],
+                correct: 1
+            },
+            {
+                question: "Chevron plot is used to ________",
+                options: [
+                    "Understand protein folding kinetics",
+                    "Understand thermodynamics of protein folding",
+                    "Predict protein 3-D structures",
+                    "Predict protein function"
+                ],
+                correct: 0
+            },
+            {
+                question: "In exposed coil mutations, which of the following is correct?",
+                options: [
+                    "An inverse relationship between flexibility and stability",
+                    "An inverse relationship between polarity and stability",
+                    "An inverse relationship between hydrophobicity and stability",
+                    "A direct relationship between hydrophobicity and stability"
+                ],
+                correct: 2
+            },
+            {
+                question: "Method(s) to predict the stability of proteins upon amino acid substitutions is (are) based on ___",
+                options: [
+                    "Effective potentials",
+                    "Energy calculations",
+                    "Machine learning techniques",
+                    "All of these"
+                ],
+                correct: 3
+            },
+            {
+                question: "If the distance between atoms Lys–NZ and Asp–OD2 (PDB format) is < 3Å, then they have a high tendency to form a ________",
+                options: [
+                    "Cation-π interaction",
+                    "Salt bridge",
+                    "π–π stacking",
+                    "Disulfide bond"
+                ],
+                correct: 1
+            },
+            {
+                question: "Lipinski's rule of five is violated if ________",
+                options: [
+                    "Hydrogen bond donor is less than 5",
+                    "Octanol-water Partition coefficient is less than 5",
+                    "Hydrogen bond acceptor is less than 10",
+                    "Molecular weight is more than 500 Da"
+                ],
+                correct: 3
+            },
+            {
+                question: "Contact order is defined as ________ (Sij: sequence separation between residues i and j; L: residue length; N: number of contacts)",
+                options: [
+                    "CO = ΣSij/(L*N)",
+                    "CO = Σ(Sij*L)/N",
+                    "CO = Σ(Sij/N)",
+                    "CO = Σ(L*N)/Sij"
+                ],
+                correct: 0
+            },
+            {
+                question: "Protein folding rates provide information on ________",
+                options: [
+                    "3D structure from sequence",
+                    "How fast or slow a protein can unfold",
+                    "How fast a protein assumes its native structure",
+                    "All of these"
+                ],
+                correct: 2
+            },
+            {
+                question: "Binding mode provides information on ________",
+                options: [
+                    "Cavity in the protein",
+                    "Location, where a ligand bind",
+                    "Geometry of the ligand at the binding site",
+                    "All of these"
+                ],
+                correct: 2
+            },
+            {
+                question: "What cut-off distance based on Cα atom is used for identifying binding sites in a protein-protein complex?",
+                options: [
+                    "2Å",
+                    "4Å",
+                    "6Å",
+                    "12Å"
+                ],
+                correct: 2
+            },
+            {
+                question: "The Lipinski's rule of 5 is mainly used to predict ________",
+                options: [
+                    "Ligand binding strength",
+                    "Drug likeliness",
+                    "Toxicity",
+                    "Distribution"
+                ],
+                correct: 1
+            },
+            {
+                question: "Tanimoto coefficient is used to ________",
+                options: [
+                    "Compare the structure of ligands",
+                    "Compare the structure of proteins",
+                    "Compare the structure of both ligands and proteins",
+                    "Identify the similarity between protein and ligand"
+                ],
+                correct: 0
+            },
+            {
+                question: "Virtual screening involves ________",
+                options: [
+                    "One ligand and one protein",
+                    "One protein and many ligands",
+                    "Many proteins and one ligand",
+                    "None of these"
+                ],
+                correct: 1
+            },
+            {
+                question: "In structure-based drug design, the enthalpic contribution to binding affinity primarily arises from ________",
+                options: [
+                    "Ligand conformational entropy",
+                    "Solvation entropy",
+                    "Electrostatic and hydrogen-bonding interactions",
+                    "Translational entropy"
+                ],
+                correct: 2
+            },
+            {
+                question: "2D QSAR deals with ________",
+                options: [
+                    "Molecular properties",
+                    "Connectivity indices",
+                    "Surrounding atoms in structure",
+                    "All of these"
+                ],
+                correct: 1
+            },
+            {
+                question: "Which databases contain small molecules?",
+                options: [
+                    "ZINC and ChEMBL",
+                    "MPAD and ZINC",
+                    "DDBJ and PDB",
+                    "ZINC and TrEMBL"
+                ],
+                correct: 0
+            },
+            {
+                question: "What are two essential components of a molecular docking algorithm?",
+                options: [
+                    "Ligand structure and solubility",
+                    "Scoring function and binding energy",
+                    "Search and scoring functions",
+                    "Protein structure and electrostatic potential"
+                ],
+                correct: 2
+            },
+            {
+                question: "The IC50 values of two protein-ligand complexes are 10 nM and 5 nM. The IC50 values are related to the hydrogen bond donor (4 and 1, respectively) and polar surface area (6 and 1, respectively). The IC50 value of a compound with 3 hydrogen bond donors and a polar surface area of 4 is ________ nM.",
+                options: [
+                    "1",
+                    "7",
+                    "15",
+                    "10"
+                ],
+                correct: 3
+            },
+            {
+                question: "QSAR in ligand-based drug design is based on the notion that",
+                options: [
+                    "Activity is a function of translation",
+                    "Activity is a function of molecular properties",
+                    "Activity is a function of rotation",
+                    "Activity is the function of translation and rotation"
+                ],
+                correct: 1
+            },
+            {
+                question: "QSAR involves the following steps: 1. Feature selection, 2. Generation of descriptors, 3. Collection of ligands with experimentally known activity, 4. Validation of model, 5. Construction of model. Choose the correct order:",
+                options: [
+                    "2→5→3→1→4",
+                    "5→2→3→4→1",
+                    "3→2→1→5→4",
+                    "4→3→5→2→1"
+                ],
+                correct: 2
+            },
+
+            // === SET 13: Machine Learning in Bioinformatics ===
+            {
+                question: "Select the correct AWK command that prints rows 20 to 30 of the fifth column from the comma-separated file 'file.dat.'",
+                options: [
+                    "awk -F ',' 'NR > 19 && NR <=30 {print $5}' file.dat",
+                    "awk -F ',' 'NR > 20 && NR < 30 {print $5}' file.dat",
+                    "awk 'NR >= && NR < 30' '{print $5}' file.dat",
+                    "awk -F ',' 'NF > 19 && NR <=30' '{print $5}' file.dat"
+                ],
+                correct: 0
+            },
+            {
+                question: "AWK programming is primarily used for ________",
+                options: [
+                    "Molecular dynamics",
+                    "Pattern matching and data manipulation",
+                    "Structural modeling",
+                    "Phylogenetic tree reconstruction"
+                ],
+                correct: 1
+            },
+            {
+                question: "SVM mainly depends on ________",
+                options: [
+                    "Number of clusters",
+                    "Finding a hyperplane",
+                    "Both A and B",
+                    "None of these"
+                ],
+                correct: 1
+            },
+            {
+                question: "Weka is used for ________",
+                options: [
+                    "Regression",
+                    "Classification",
+                    "Clustering",
+                    "All of these"
+                ],
+                correct: 3
+            },
+            {
+                question: "In machine learning, the blind test set is used for ________",
+                options: [
+                    "Training",
+                    "Optimizing hyperparameters",
+                    "Evaluating the reliability of the method",
+                    "Deriving features from the main dataset"
+                ],
+                correct: 2
+            },
+            {
+                question: "The sensitivity of the following confusion matrix is ________ (Actual +ve: Predicted +ve=8, Predicted -ve=2; Actual -ve: Predicted +ve=3, Predicted -ve=7)",
+                options: [
+                    "0.80",
+                    "0.70",
+                    "0.75",
+                    "0.73"
+                ],
+                correct: 0
+            },
+            {
+                question: "PDBTM provides the data on ________",
+                options: [
+                    "Structures of transmembrane helical proteins",
+                    "Structures of transmembrane strand proteins",
+                    "Structures of transmembrane helical and strand proteins",
+                    "Structures and sequences of transmembrane helical and strand proteins"
+                ],
+                correct: 3
+            },
+            {
+                question: "In a protein-DNA complex with 100 amino acid residues, 25 residues are binding sites. A prediction program identified 30 binding site residues and 18 are matching with experimental data. Sensitivity of the method is ________ %",
+                options: [
+                    "60",
+                    "72",
+                    "80",
+                    "90"
+                ],
+                correct: 1
+            },
+            {
+                question: "AUC for a random ROC curve is ________",
+                options: [
+                    "0.0",
+                    "0.5",
+                    "0.75",
+                    "1.0"
+                ],
+                correct: 1
+            },
+            {
+                question: "On classification problems, the output variable must be ________ and for regression problems, the output variable must be ________.",
+                options: [
+                    "Real, Nominal",
+                    "Nominal, Real",
+                    "Integer, String",
+                    "String, Real"
+                ],
+                correct: 1
+            },
+            {
+                question: "Which of the following equations is correct if the correlation between two sets of data A and B is 1?",
+                options: [
+                    "A = B + 0.5",
+                    "A = -B + 1",
+                    "A = 1/B",
+                    "A = 1/B²"
+                ],
+                correct: 0
+            },
+            {
+                question: "If A is a confusion matrix from a binary classification prediction, the values at A₁₁ and A₂₂ denote?",
+                options: [
+                    "False positives and true negatives",
+                    "True positives and false positives",
+                    "True positives and true negatives",
+                    "True positives and false negatives"
+                ],
+                correct: 2
+            },
+            {
+                question: "For predicting the type of a test protein, X, between two groups of proteins, A and B, based on amino acid composition, which of the following statement holds good?",
+                options: [
+                    "Correlation between X and A is higher than B, it belongs to A",
+                    "Deviation between X and A is higher than B, it belongs to A",
+                    "Deviation between X and A is higher than B and correlation between X and B is lower than A, it belongs to B",
+                    "All of these"
+                ],
+                correct: 0
+            },
+            {
+                question: "For the following assignment (B: positive): Experimental: NNEBBBNNENENNNEBB / Predicted: NNNBBBBNNEBBBNNNB. What is the specificity?",
+                options: [
+                    "55.56%",
+                    "50%",
+                    "42.86%",
+                    "31.2%"
+                ],
+                correct: 2
+            },
+            {
+                question: "Which of the formats is not accepted in WEKA?",
+                options: [
+                    ".csv",
+                    ".txt",
+                    ".pdb",
+                    ".arff"
+                ],
+                correct: 2
+            },
+            {
+                question: "The performance of a computational method for discriminating stabilizing and destabilizing mutations ________ when the dataset is classified based on secondary structure and solvent accessibility.",
+                options: [
+                    "Increases",
+                    "Decreases",
+                    "No change",
+                    "Secondary structure increases and solvent accessibility decreases"
+                ],
+                correct: 0
+            },
+            {
+                question: "How many data points are used for training in a jack-knife test for a dataset of N data points per iteration?",
+                options: [
+                    "N",
+                    "N-1",
+                    "0.9 * N",
+                    "N+1"
+                ],
+                correct: 1
+            },
+            {
+                question: "For a given method, sensitivity and specificity are 95.5% and 85.5%. If we label the positive as negative class and negative as positive class, what would be the sensitivity and specificity?",
+                options: [
+                    "95.5 and 85.5",
+                    "85.5 and 95.5",
+                    "90.0 and 90.0",
+                    "None of these"
+                ],
+                correct: 1
+            },
+            {
+                question: "Principle used in K-means clustering is to ________",
+                options: [
+                    "Minimize the variance within the cluster",
+                    "Maximize the variance within the cluster",
+                    "Minimize the variance among different clusters",
+                    "None of these"
+                ],
+                correct: 0
+            },
+            {
+                question: "What would be the output of the function f(x) = sgn(w0 + w1*x1 + w2*x2), if w0, w1, w2, x1, x2 are 2, -1, 2, 2, and 1, respectively? Let sgn(x) = {1 if x >= 0; 0 if x < 0}",
+                options: [
+                    "0",
+                    "1",
+                    "2",
+                    "-1"
+                ],
+                correct: 1
+            }
+        ];
+
+        let userAnswers = new Array(quizData.length).fill(null);
+        let isSubmitted = false;
+        let currentMode = 'study';
+
+        function setMode(mode) {
+            if (isSubmitted) {
+                alert('Cannot change mode after quiz has started. Please refresh the page to start over.');
+                return;
+            }
+
+            const hasAnswers = userAnswers.some(a => a !== null);
+            if (hasAnswers) {
+                if (!confirm('Changing mode will reset your progress. Continue?')) {
+                    return;
+                }
+                location.reload();
+                return;
+            }
+
+            currentMode = mode;
+            document.getElementById('studyModeBtn').classList.toggle('active', mode === 'study');
+            document.getElementById('examModeBtn').classList.toggle('active', mode === 'exam');
+
+            const indicator = document.getElementById('modeIndicator');
+            indicator.textContent = mode === 'study' ? 'Study' : 'Exam';
+            indicator.className = `mode-indicator ${mode}`;
+
+            const submitButton = document.querySelector('.submit-button');
+            if (submitButton) {
+                submitButton.textContent = mode === 'study' ? 'Finish Quiz' : 'Submit Quiz';
+            }
+        }
+
+        function renderQuiz() {
+            const quizContent = document.getElementById('quizContent');
+            quizContent.innerHTML = '';
+
+            quizData.forEach((q, index) => {
+                const questionCard = document.createElement('div');
+                questionCard.className = 'question-card';
+                questionCard.id = `question-${index}`;
+
+                const questionHeader = document.createElement('div');
+                questionHeader.className = 'question-header';
+
+                const questionNumber = document.createElement('div');
+                questionNumber.className = 'question-number';
+                questionNumber.textContent = index + 1;
+
+                const questionText = document.createElement('div');
+                questionText.className = 'question-text';
+                questionText.textContent = q.question;
+
+                questionHeader.appendChild(questionNumber);
+                questionHeader.appendChild(questionText);
+
+                const optionsContainer = document.createElement('div');
+                optionsContainer.className = 'options';
+
+                q.options.forEach((option, optIndex) => {
+                    const optionDiv = document.createElement('div');
+                    optionDiv.className = 'option';
+                    optionDiv.id = `q${index}-opt${optIndex}`;
+
+                    const radio = document.createElement('input');
+                    radio.type = 'radio';
+                    radio.name = `question-${index}`;
+                    radio.value = optIndex;
+                    radio.id = `q${index}-${optIndex}`;
+                    radio.onchange = () => selectAnswer(index, optIndex);
+
+                    const label = document.createElement('label');
+                    label.htmlFor = `q${index}-${optIndex}`;
+                    label.textContent = option;
+
+                    optionDiv.appendChild(radio);
+                    optionDiv.appendChild(label);
+                    optionsContainer.appendChild(optionDiv);
+                    optionDiv.onclick = () => {
+                        if (radio.disabled) return;
+                        radio.checked = true;
+                        selectAnswer(index, optIndex);
+                    };
+                });
+
+                const feedback = document.createElement('div');
+                feedback.className = 'feedback';
+                feedback.id = `feedback-${index}`;
+
+                questionCard.appendChild(questionHeader);
+                questionCard.appendChild(optionsContainer);
+                questionCard.appendChild(feedback);
+
+                quizContent.appendChild(questionCard);
+            });
+
+            const submitButton = document.createElement('button');
+            submitButton.className = 'submit-button';
+            submitButton.textContent = currentMode === 'study' ? 'Finish Quiz' : 'Submit Quiz';
+            submitButton.onclick = submitQuiz;
+            quizContent.appendChild(submitButton);
+        }
+
+        function selectAnswer(questionIndex, optionIndex) {
+            if (isSubmitted && currentMode === 'exam') return;
+            if (currentMode === 'study' && userAnswers[questionIndex] !== null) return;
+
+            userAnswers[questionIndex] = optionIndex;
+
+            const options = document.querySelectorAll(`[name="question-${questionIndex}"]`);
+            options.forEach((opt, idx) => {
+                const optDiv = document.getElementById(`q${questionIndex}-opt${idx}`);
+                if (idx === optionIndex) {
+                    optDiv.classList.add('selected');
+                } else {
+                    optDiv.classList.remove('selected');
+                }
+            });
+
+            if (currentMode === 'study') {
+                showQuestionFeedback(questionIndex);
+            }
+
+            updateStats();
+        }
+
+        function showQuestionFeedback(questionIndex) {
+            const q = quizData[questionIndex];
+            const questionCard = document.getElementById(`question-${questionIndex}`);
+            const feedback = document.getElementById(`feedback-${questionIndex}`);
+            const userAnswer = userAnswers[questionIndex];
+
+            if (userAnswer === null) return;
+
+            const isCorrect = userAnswer === q.correct;
+
+            if (isCorrect) {
+                questionCard.classList.add('correct');
+                feedback.classList.add('correct', 'show');
+                feedback.textContent = '✓ Correct!';
+            } else {
+                questionCard.classList.add('incorrect');
+                feedback.classList.add('incorrect', 'show');
+                feedback.textContent = `✗ Incorrect. The correct answer is: ${q.options[q.correct]}`;
+            }
+
+            q.options.forEach((opt, optIndex) => {
+                const optDiv = document.getElementById(`q${questionIndex}-opt${optIndex}`);
+                if (optIndex === q.correct) {
+                    optDiv.classList.add('correct-answer');
+                } else if (optIndex === userAnswer && !isCorrect) {
+                    optDiv.classList.add('wrong-answer');
+                }
+            });
+
+            const radios = document.querySelectorAll(`[name="question-${questionIndex}"]`);
+            radios.forEach(radio => radio.disabled = true);
+        }
+
+        function updateStats() {
+            const answered = userAnswers.filter(a => a !== null).length;
+            document.getElementById('answered').textContent = answered;
+
+            const progress = (answered / quizData.length) * 100;
+            document.getElementById('progressFill').style.width = `${progress}%`;
+
+            if (currentMode === 'study') {
+                let score = 0;
+                userAnswers.forEach((answer, index) => {
+                    if (answer !== null && answer === quizData[index].correct) {
+                        score++;
+                    }
+                });
+                document.getElementById('currentScore').textContent = score;
+            }
+        }
+
+        function submitQuiz() {
+            if (isSubmitted) return;
+
+            const answered = userAnswers.filter(a => a !== null).length;
+
+            if (currentMode === 'exam' && answered < quizData.length) {
+                if (!confirm(`You have only answered ${answered} out of ${quizData.length} questions. Submit anyway?`)) {
+                    return;
+                }
+            }
+
+            if (currentMode === 'study' && answered < quizData.length) {
+                if (!confirm(`You have only answered ${answered} out of ${quizData.length} questions. Finish quiz anyway?`)) {
+                    return;
+                }
+            }
+
+            isSubmitted = true;
+            let score = 0;
+
+            quizData.forEach((q, index) => {
+                const userAnswer = userAnswers[index];
+
+                if (userAnswer !== null && userAnswer === q.correct) {
+                    score++;
+                }
+
+                if (currentMode === 'exam') {
+                    const questionCard = document.getElementById(`question-${index}`);
+                    const feedback = document.getElementById(`feedback-${index}`);
+
+                    const isCorrect = userAnswer === q.correct;
+
+                    if (userAnswer === null) {
+                        questionCard.classList.add('incorrect');
+                        feedback.classList.add('incorrect', 'show');
+                        feedback.textContent = `✗ Not attempted. The correct answer is: ${q.options[q.correct]}`;
+                    } else if (isCorrect) {
+                        questionCard.classList.add('correct');
+                        feedback.classList.add('correct', 'show');
+                        feedback.textContent = '✓ Correct!';
+                    } else {
+                        questionCard.classList.add('incorrect');
+                        feedback.classList.add('incorrect', 'show');
+                        feedback.textContent = `✗ Incorrect. The correct answer is: ${q.options[q.correct]}`;
+                    }
+
+                    q.options.forEach((opt, optIndex) => {
+                        const optDiv = document.getElementById(`q${index}-opt${optIndex}`);
+                        if (optIndex === q.correct) {
+                            optDiv.classList.add('correct-answer');
+                        } else if (optIndex === userAnswer) {
+                            optDiv.classList.add('wrong-answer');
+                        }
+                    });
+
+                    const radios = document.querySelectorAll(`[name="question-${index}"]`);
+                    radios.forEach(radio => radio.disabled = true);
+                }
+            });
+
+            document.getElementById('currentScore').textContent = score;
+
+            const percentage = Math.round((score / quizData.length) * 100);
+            document.getElementById('finalScore').textContent = `${score}/${quizData.length}`;
+            document.getElementById('percentage').textContent = percentage;
+            document.getElementById('results').classList.add('show');
+
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+
+            // In exam mode, show the shuffled retry button
+            if (currentMode === 'exam') {
+                document.getElementById('shuffleRetryBtn').style.display = 'inline-block';
+            }
+
+            const submitButton = document.querySelector('.submit-button');
+            submitButton.style.display = 'none';
+        }
+
+        // --- Shuffle helpers ---
+        function shuffleArray(arr) {
+            const a = arr.slice();
+            for (let i = a.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [a[i], a[j]] = [a[j], a[i]];
+            }
+            return a;
+        }
+
+        function shuffleQuizData() {
+            // 1. Shuffle question order
+            const shuffledQuestions = shuffleArray(quizData);
+
+            // 2. For each question, shuffle its options and update the correct index
+            shuffledQuestions.forEach(q => {
+                const correctAnswerText = q.options[q.correct]; // remember the correct answer text
+                const shuffledOptions = shuffleArray(q.options);
+                q.options = shuffledOptions;
+                q.correct = shuffledOptions.indexOf(correctAnswerText); // find new index
+            });
+
+            // 3. Replace quizData in place
+            quizData.length = 0;
+            shuffledQuestions.forEach(q => quizData.push(q));
+        }
+
+        function shuffleAndRetry() {
+            // Shuffle questions and options, then reset and re-render
+            shuffleQuizData();
+            isSubmitted = false;
+            userAnswers = new Array(quizData.length).fill(null);
+
+            document.getElementById('results').classList.remove('show');
+            document.getElementById('answered').textContent = 0;
+            document.getElementById('currentScore').textContent = 0;
+            document.getElementById('progressFill').style.width = '0%';
+            document.getElementById('shuffleRetryBtn').style.display = 'none';
+
+            renderQuiz();
+            document.getElementById('totalQuestions').textContent = quizData.length;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        // --- End shuffle helpers ---
+
+        window.onload = () => {
+            renderQuiz();
+            document.getElementById('totalQuestions').textContent = quizData.length;
+        };
+    </script>
+</body>
+</html>
