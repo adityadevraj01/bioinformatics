@@ -413,6 +413,7 @@
                 <span id="percentage">0</span>% Correct
             </p>
             <button class="retry-button" onclick="location.reload()">Retry Quiz</button>
+            <button class="retry-button" id="shuffleRetryBtn" style="display:none; margin-left:10px; background:#667eea; color:white; border-color:#667eea;" onclick="shuffleAndRetry()">🔀 Try Again (Shuffled)</button>
         </div>
     </div>
 
@@ -1992,9 +1993,59 @@
 
             document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
 
+            // In exam mode, show the shuffled retry button
+            if (currentMode === 'exam') {
+                document.getElementById('shuffleRetryBtn').style.display = 'inline-block';
+            }
+
             const submitButton = document.querySelector('.submit-button');
             submitButton.style.display = 'none';
         }
+
+        // --- Shuffle helpers ---
+        function shuffleArray(arr) {
+            const a = arr.slice();
+            for (let i = a.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [a[i], a[j]] = [a[j], a[i]];
+            }
+            return a;
+        }
+
+        function shuffleQuizData() {
+            // 1. Shuffle question order
+            const shuffledQuestions = shuffleArray(quizData);
+
+            // 2. For each question, shuffle its options and update the correct index
+            shuffledQuestions.forEach(q => {
+                const correctAnswerText = q.options[q.correct]; // remember the correct answer text
+                const shuffledOptions = shuffleArray(q.options);
+                q.options = shuffledOptions;
+                q.correct = shuffledOptions.indexOf(correctAnswerText); // find new index
+            });
+
+            // 3. Replace quizData in place
+            quizData.length = 0;
+            shuffledQuestions.forEach(q => quizData.push(q));
+        }
+
+        function shuffleAndRetry() {
+            // Shuffle questions and options, then reset and re-render
+            shuffleQuizData();
+            isSubmitted = false;
+            userAnswers = new Array(quizData.length).fill(null);
+
+            document.getElementById('results').classList.remove('show');
+            document.getElementById('answered').textContent = 0;
+            document.getElementById('currentScore').textContent = 0;
+            document.getElementById('progressFill').style.width = '0%';
+            document.getElementById('shuffleRetryBtn').style.display = 'none';
+
+            renderQuiz();
+            document.getElementById('totalQuestions').textContent = quizData.length;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        // --- End shuffle helpers ---
 
         window.onload = () => {
             renderQuiz();
